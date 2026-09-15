@@ -1,5 +1,5 @@
 # Especificación técnica - BeautySquad1114
-# Especificación técnica - BeautySquad1114
+
 
 ## 1. Descripción
 
