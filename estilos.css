@@ -1,0 +1,159 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f3f5;
+    color: #333;
+}
+
+/* ENCABEZADO */
+
+header {
+    background-color: #6d4c5b;
+    color: white;
+    text-align: center;
+    padding: 35px 20px;
+}
+
+header h1 {
+    font-size: 35px;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 17px;
+}
+
+/* CONTENIDO */
+
+main {
+    width: 90%;
+    max-width: 1000px;
+    margin: 30px auto;
+}
+
+section {
+    background-color: white;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+h2 {
+    color: #6d4c5b;
+    margin-bottom: 20px;
+}
+
+/* FORMULARIO */
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-top: 12px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+input,
+select {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+/* BOTONES */
+
+button {
+    background-color: #6d4c5b;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    margin-top: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background-color: #513743;
+}
+
+/* CITAS */
+
+.cita {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    background-color: #faf7f8;
+}
+
+.cita p {
+    margin: 7px 0;
+}
+
+.estado {
+    font-weight: bold;
+}
+
+/* PROMOCIONES */
+
+.promociones {
+    text-align: center;
+}
+
+.promocion {
+    display: inline-block;
+    width: 30%;
+    min-width: 250px;
+    vertical-align: top;
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #e0d2d7;
+    border-radius: 15px;
+    background-color: #f8f1f4;
+}
+
+.promocion h3 {
+    color: #6d4c5b;
+    margin-bottom: 10px;
+}
+
+.promocion p {
+    line-height: 1.5;
+}
+
+.promocion button {
+    margin-top: 15px;
+}
+}
+
+/* CELULARES */
+
+@media (max-width: 600px) {
+
+    header h1 {
+        font-size: 28px;
+    }
+
+    main {
+        width: 95%;
+    }
+
+    section {
+        padding: 20px;
+    }
+
+    .contacto button {
+        width: 90%;
+    }
+}

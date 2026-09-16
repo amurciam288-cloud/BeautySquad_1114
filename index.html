@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Citas</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>BeautySquad</h1>
+        <p>Reserva tu cita de manera fácil y rápida</p>
+    </header>
+
+    <main>
+
+        <section class="citas">
+            <h2>Solicitar una cita</h2>
+
+            <form id="formularioCita">
+
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" required>
+
+                <label for="servicio">Servicio:</label>
+                <select id="servicio" required>
+                    <option value="">Selecciona un servicio</option>
+                    <option value="Corte de cabello">Corte de cabello</option>
+                    <option value="Cepillado">Cepillado</option>
+                    <option value="Manicure">Manicure</option>
+                    <option value="Pedicure">Pedicure</option>
+                    <option value="Diseño de uñas">Diseño de uñas</option>
+                </select>
+
+                <label for="fecha">Fecha:</label>
+                <input type="date" id="fecha" required>
+
+                <label for="hora">Hora:</label>
+                <select id="hora" required>
+                    <option value="">Selecciona una hora</option>
+                    <option value="9:00 AM">9:00 AM</option>
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="2:00 PM">2:00 PM</option>
+                    <option value="5:00 PM">2:30 PM</option>
+                    <option value="3:00 PM">3:00 PM</option>
+                    <option value="4:00 PM">4:00 PM</option>
+                    <option value="5:00 PM">5:00 PM</option>
+                </select>
+
+                <button type="submit">Reservar cita</button>
+
+            </form>
+        </section>
+
+        <section class="mis-citas">
+            <h2>Mis citas</h2>
+
+            <div id="listaCitas">
+                <p>No tienes citas registradas.</p>
+            </div>
+        </section>
+
+        <section class="promociones">
+    <h2>✨ Promociones especiales ✨</h2>
+
+    <div class="promocion">
+        <h3>💇 Corte + Cepillado</h3>
+        <p>Obtén un precio especial al combinar estos servicios.</p>
+        <a href="#formularioCita">
+    <button type="button">Reservar promoción</button>
+</a>
+    </div>
+
+    <div class="promocion">
+        <h3>💅 Manicure + Pedicure</h3>
+        <p>Cuida tus manos y pies con esta promoción especial.</p>
+       <a href="#formularioCita">
+    <button type="button">Reservar promoción</button>
+</a>
+    </div>
+
+    <div class="promocion">
+        <h3>💖 Diseño de uñas</h3>
+        <p>Elige tu diseño favorito y luce unas uñas increíbles.</p>
+       <a href="#formularioCita">
+    <button type="button">Reservar promoción</button>
+</a>
+    </div>
+</section>
+<section class="contacto">
+    <h2>Contáctanos</h2>
+
+    <p>¿Tienes alguna pregunta? Escríbenos.</p>
+
+    <a href="https://wa.me/573000000000" target="_blank">
+        <button>WhatsApp</button>
+    </a>
+
+    <a href="https://www.instagram.com/" target="_blank">
+        <button>Instagram</button>
+    </a>
+
+    <a href="tel:+573000000000">
+        <button>Llamar</button>
+    </a>
+</section>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
