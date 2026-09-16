@@ -1,11 +1,80 @@
+# BeautySquad 1114
 
-# BeautySquad_1114
+## Backend
 
-BeautySquad1114 es un proyecto de salón de belleza creado por cuatro estudiantes de la sección 1114. Ofreceremos una variedad de servicios de belleza y cuidado personal, brindando calidad y una experiencia agradable. Además, utilizaremos el marketing digital y las redes sociales para promocionar nuestros servicios y atraer clientes.
+Backend desarrollado para el proyecto BeautySquad 1114.
 
-## Integrantes
+El sistema permite gestionar usuarios, servicios y citas.
 
-* Alisson julieth Gutiérrez Martinez — Cargo = Diseño y Frontend
-* Alejandra Cathalina Murcia Mendivelso — Cargo = Sistema de citas y marketing Digital
-* Dana Liseth Reyes Acuña — Cargo = Backend usuarios y base de datos
-* Angie Valentina Alape Cubillos — Cargo = Configuracion, documentacion e integracion del proyecto 
+## Tecnologías
+
+- Python
+- Flask
+- SQLite
+- Flask-SQLAlchemy
+- Werkzeug
+
+## Funciones
+
+- Registro de usuarios
+- Inicio de sesión
+- Cierre de sesión
+- Roles de usuario
+- Gestión de usuarios
+- Gestión de servicios
+- Gestión de citas
+- Validación de información
+- Base de datos
+- Almacenamiento de información
+
+## Instalación
+
+Crear un entorno virtual:
+
+python -m venv venv
+
+Activar el entorno virtual en Windows:
+
+venv\Scripts\activate
+
+Instalar las dependencias:
+
+pip install -r requirements.txt
+
+Ejecutar el proyecto:
+
+python app.py
+
+## Dirección
+
+http://127.0.0.1:5000
+
+## Endpoints
+
+### Autenticación
+
+POST /api/auth/register
+
+POST /api/auth/login
+
+POST /api/auth/logout
+
+### Usuarios
+
+GET /api/users/
+
+### Servicios
+
+GET /api/services/
+
+POST /api/services/
+
+### Citas
+
+GET /api/appointments/
+
+POST /api/appointments/
+
+## Objetivo
+
+El objetivo es desarrollar el backend de BeautySquad permitiendo administrar usuarios, servicios y citas mediante una API conectada a una base de datos.
