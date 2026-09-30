@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, session
 
 from models import db
 from models import User
@@ -30,11 +30,6 @@ def register():
         ""
     )
 
-    role = data.get(
-        "role",
-        "client"
-    )
-
     # Validaciones
 
     if not name or not email or not password:
@@ -55,12 +50,6 @@ def register():
             "error": "La contraseña debe tener mínimo 6 caracteres"
         }, 400
 
-    if role not in ("client", "admin"):
-
-        return {
-            "error": "Rol no válido"
-        }, 400
-
     # Comprobar usuario existente
 
     existing_user = User.query.filter_by(
@@ -78,7 +67,7 @@ def register():
     user = User(
         name=name,
         email=email,
-        role=role
+        role="client"
     )
 
     user.set_password(password)
@@ -127,6 +116,9 @@ def login():
             "error": "Correo o contraseña incorrectos"
         }, 401
 
+    session.clear()
+    session["user_id"] = user.id
+
     return {
 
         "mensaje": "Inicio de sesión correcto",
@@ -145,7 +137,7 @@ def login():
 
 @auth_bp.post("/logout")
 def logout():
-
+    session.clear()
     return {
         "mensaje": "Sesión cerrada correctamente"
     }

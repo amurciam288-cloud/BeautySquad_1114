@@ -6,6 +6,19 @@ Backend desarrollado para el proyecto BeautySquad 1114.
 
 El sistema permite gestionar usuarios, servicios y citas.
 
+## Current security model
+
+- Public registration always creates a `client` account.
+- Login uses a Flask server-side session.
+- Only an authenticated administrator can list users or create services.
+- Clients can only list and create their own appointments.
+
+Create the first administrator from the terminal, never from the public API:
+
+```bash
+flask --app app create-admin
+```
+
 ## Tecnologías
 
 - Python
@@ -44,6 +57,12 @@ pip install -r requirements.txt
 Ejecutar el proyecto:
 
 python app.py
+
+## Tests
+
+```bash
+pytest
+```
 
 ## Dirección
 

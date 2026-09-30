@@ -1,6 +1,7 @@
 from flask import Blueprint
 
 from models import User
+from routes.security import admin_required
 
 
 users_bp = Blueprint(
@@ -10,6 +11,7 @@ users_bp = Blueprint(
 
 
 @users_bp.get("/")
+@admin_required
 def list_users():
 
     users = User.query.all()

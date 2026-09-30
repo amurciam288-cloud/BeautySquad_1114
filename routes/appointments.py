@@ -1,10 +1,11 @@
-from flask import Blueprint
+from flask import Blueprint, g
 from flask import request
 
 from models import db
 from models import User
 from models import Service
 from models import Appointment
+from routes.security import login_required
 
 
 appointments_bp = Blueprint(
@@ -14,9 +15,15 @@ appointments_bp = Blueprint(
 
 
 @appointments_bp.get("/")
+@login_required
 def list_appointments():
 
-    appointments = Appointment.query.all()
+    if g.current_user.role == "admin":
+        appointments = Appointment.query.all()
+    else:
+        appointments = Appointment.query.filter_by(
+            user_id=g.current_user.id
+        ).all()
 
     return {
 
@@ -39,6 +46,7 @@ def list_appointments():
 
 
 @appointments_bp.post("/")
+@login_required
 def create_appointment():
 
     data = request.get_json() or {}
@@ -53,32 +61,17 @@ def create_appointment():
         ""
     ).strip()
 
-    user_id = data.get(
-        "user_id"
-    )
-
     service_id = data.get(
         "service_id"
     )
 
     # Validaciones
 
-    if not date or not time or not user_id or not service_id:
+    if not date or not time or not service_id:
 
         return {
-            "error": "Fecha, hora, usuario y servicio son obligatorios"
+            "error": "Fecha, hora y servicio son obligatorios"
         }, 400
-
-    user = db.session.get(
-        User,
-        user_id
-    )
-
-    if not user:
-
-        return {
-            "error": "El usuario no existe"
-        }, 404
 
     service = db.session.get(
         Service,
@@ -97,7 +90,7 @@ def create_appointment():
 
         date=date,
         time=time,
-        user_id=user_id,
+        user_id=g.current_user.id,
         service_id=service_id
 
     )

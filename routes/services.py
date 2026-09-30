@@ -3,6 +3,7 @@ from flask import request
 
 from models import db
 from models import Service
+from routes.security import admin_required
 
 
 services_bp = Blueprint(
@@ -35,6 +36,7 @@ def list_services():
 
 
 @services_bp.post("/")
+@admin_required
 def create_service():
 
     data = request.get_json() or {}
