@@ -33,6 +33,29 @@ def validate_slot(data):
     return raw_date, raw_time, None
 
 
+def serialize_appointment(appointment, include_context=False):
+    result = {
+        "id": appointment.id,
+        "date": appointment.date,
+        "time": appointment.time,
+        "status": appointment.status,
+    }
+
+    if include_context:
+        result["user"] = {
+            "id": appointment.user.id,
+            "name": appointment.user.name,
+            "email": appointment.user.email,
+        }
+        result["service"] = {
+            "id": appointment.service.id,
+            "name": appointment.service.name,
+            "price": appointment.service.price,
+        }
+
+    return result
+
+
 @appointments_bp.post("/availability")
 @admin_required
 def create_availability():
@@ -69,24 +92,37 @@ def create_availability():
 def list_appointments():
 
     if g.current_user.role == "admin":
-        appointments = Appointment.query.all()
+        query = Appointment.query
     else:
-        appointments = Appointment.query.filter_by(
+        query = Appointment.query.filter_by(
             user_id=g.current_user.id
-        ).all()
+        )
+
+    requested_status = request.args.get("status")
+    requested_date = request.args.get("date")
+
+    if requested_status:
+        if requested_status not in {"pending", "confirmed", "cancelled", "completed"}:
+            return {"error": "Estado de cita no válido"}, 400
+        query = query.filter_by(status=requested_status)
+
+    if requested_date:
+        try:
+            datetime.strptime(requested_date, "%Y-%m-%d")
+        except ValueError:
+            return {"error": "La fecha debe usar YYYY-MM-DD"}, 400
+        query = query.filter_by(date=requested_date)
+
+    appointments = query.order_by(Appointment.date, Appointment.time).all()
 
     return {
 
         "citas": [
 
-            {
-                "id": appointment.id,
-                "date": appointment.date,
-                "time": appointment.time,
-                "status": appointment.status,
-                "user_id": appointment.user_id,
-                "service_id": appointment.service_id
-            }
+            serialize_appointment(
+                appointment,
+                include_context=g.current_user.role == "admin"
+            )
 
             for appointment in appointments
 
@@ -159,16 +195,7 @@ def create_appointment():
 
         "mensaje": "Cita creada correctamente",
 
-        "cita": {
-
-            "id": appointment.id,
-            "date": appointment.date,
-            "time": appointment.time,
-            "status": appointment.status,
-            "user_id": appointment.user_id,
-            "service_id": appointment.service_id
-
-        }
+        "cita": serialize_appointment(appointment)
 
     }, 201
 

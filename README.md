@@ -13,6 +13,7 @@ El sistema permite gestionar usuarios, servicios y citas.
 - Only an authenticated administrator can list users or create services.
 - Clients can only list and create their own appointments.
 - Administrators publish available appointment slots and can confirm or cancel appointments.
+- Administrators can edit or remove services that have no associated appointments.
 
 Create the first administrator from the terminal, never from the public API:
 
@@ -88,6 +89,10 @@ GET /api/users/
 GET /api/services/
 
 POST /api/services/
+
+PATCH /api/services/<id>
+
+DELETE /api/services/<id>
 
 ### Citas
 

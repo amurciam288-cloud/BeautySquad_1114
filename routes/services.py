@@ -12,6 +12,15 @@ services_bp = Blueprint(
 )
 
 
+def serialize_service(service):
+    return {
+        "id": service.id,
+        "name": service.name,
+        "description": service.description,
+        "price": service.price
+    }
+
+
 @services_bp.get("/")
 def list_services():
 
@@ -21,12 +30,7 @@ def list_services():
 
         "servicios": [
 
-            {
-                "id": service.id,
-                "name": service.name,
-                "description": service.description,
-                "price": service.price
-            }
+            serialize_service(service)
 
             for service in services
 
@@ -92,13 +96,60 @@ def create_service():
 
         "mensaje": "Servicio creado correctamente",
 
-        "servicio": {
-
-            "id": service.id,
-            "name": service.name,
-            "description": service.description,
-            "price": service.price
-
-        }
+        "servicio": serialize_service(service)
 
     }, 201
+
+
+@services_bp.patch("/<int:service_id>")
+@admin_required
+def update_service(service_id):
+    service = db.session.get(Service, service_id)
+
+    if not service:
+        return {"error": "El servicio no existe"}, 404
+
+    data = request.get_json() or {}
+
+    if "name" in data:
+        name = str(data["name"]).strip()
+        if not name:
+            return {"error": "El nombre no puede estar vacío"}, 400
+        service.name = name
+
+    if "description" in data:
+        service.description = str(data["description"]).strip()
+
+    if "price" in data:
+        try:
+            price = float(data["price"])
+        except (TypeError, ValueError):
+            return {"error": "El precio debe ser numérico"}, 400
+
+        if price < 0:
+            return {"error": "El precio no puede ser negativo"}, 400
+        service.price = price
+
+    db.session.commit()
+    return {
+        "mensaje": "Servicio actualizado correctamente",
+        "servicio": serialize_service(service)
+    }
+
+
+@services_bp.delete("/<int:service_id>")
+@admin_required
+def delete_service(service_id):
+    service = db.session.get(Service, service_id)
+
+    if not service:
+        return {"error": "El servicio no existe"}, 404
+
+    if service.appointments:
+        return {
+            "error": "No puedes eliminar un servicio con citas asociadas"
+        }, 409
+
+    db.session.delete(service)
+    db.session.commit()
+    return "", 204
