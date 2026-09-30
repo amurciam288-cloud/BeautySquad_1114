@@ -82,6 +82,33 @@ class Service(db.Model):
     )
 
 
+class Availability(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint("date", "time", name="unique_availability_slot"),
+    )
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    date = db.Column(
+        db.String(20),
+        nullable=False
+    )
+
+    time = db.Column(
+        db.String(10),
+        nullable=False
+    )
+
+    is_available = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=True
+    )
+
+
 class Appointment(db.Model):
 
     id = db.Column(

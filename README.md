@@ -12,6 +12,7 @@ El sistema permite gestionar usuarios, servicios y citas.
 - Login uses a Flask server-side session.
 - Only an authenticated administrator can list users or create services.
 - Clients can only list and create their own appointments.
+- Administrators publish available appointment slots and can confirm or cancel appointments.
 
 Create the first administrator from the terminal, never from the public API:
 
@@ -93,6 +94,10 @@ POST /api/services/
 GET /api/appointments/
 
 POST /api/appointments/
+
+POST /api/appointments/availability
+
+PATCH /api/appointments/<id>/status
 
 ## Objetivo
 
