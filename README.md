@@ -1,132 +1,88 @@
-# BeautySquad 1114
+# BeautySquad 1114 API
 
-## Backend
+Backend educativo para un estudio de belleza. Permite registrar clientes, administrar servicios y controlar reservas de citas con Flask y SQLite.
 
-Backend desarrollado para el proyecto BeautySquad 1114.
+## Inicio rápido
 
-El sistema permite gestionar usuarios, servicios y citas.
+1. Crea y activa un entorno virtual.
+2. Instala las dependencias de desarrollo: `pip install -r requirements-dev.txt`.
+3. Configura las variables de entorno:
 
-## Current security model
+   ```bash
+   export SECRET_KEY="replace-with-a-long-random-secret"
+   export DATABASE_URL="sqlite:///beautysquad.db"
+   ```
 
-- Public registration always creates a `client` account.
-- Login uses a Flask server-side session.
-- Only an authenticated administrator can list users or create services.
-- Clients can only list and create their own appointments.
-- Administrators publish available appointment slots and can confirm or cancel appointments.
-- Administrators can edit or remove services that have no associated appointments.
+   Usa `.env.example` como guía. No subas secretos reales al repositorio.
 
-Create the first administrator from the terminal, never from the public API:
+4. Crea la base de datos mediante migraciones:
 
-```bash
-flask --app app create-admin
-```
+   ```bash
+   flask --app app db upgrade
+   ```
 
-## Tecnologías
+5. Crea el primer administrador desde la terminal:
 
-- Python
-- Flask
-- SQLite
-- Flask-SQLAlchemy
-- Werkzeug
+   ```bash
+   flask --app app create-admin
+   ```
 
-## Funciones
+6. Inicia el servidor:
 
-- Registro de usuarios
-- Inicio de sesión
-- Cierre de sesión
-- Roles de usuario
-- Gestión de usuarios
-- Gestión de servicios
-- Gestión de citas
-- Validación de información
-- Base de datos
-- Almacenamiento de información
+   ```bash
+   python app.py
+   ```
 
-## Instalación
+La API queda disponible en `http://127.0.0.1:5000`.
 
-Before running the project, configure the environment variables. Copy
-`.env.example` and export values in your terminal; do not commit a real secret.
+## Qué está implementado
 
-```bash
-export SECRET_KEY="replace-with-a-long-random-secret"
-export DATABASE_URL="sqlite:///beautysquad.db"
-```
+| Área | Comportamiento actual |
+| --- | --- |
+| Registro | Toda cuenta pública nace con el rol `client`. |
+| Sesión | Login guarda una sesión de Flask; logout la elimina. |
+| Servicios | Cualquier visitante los consulta; solo admin los crea, edita o elimina. |
+| Horarios | Solo admin publica horarios disponibles. |
+| Citas | Un cliente reserva únicamente horarios publicados y disponibles. |
+| Estados | `pending → confirmed/cancelled`; `confirmed → completed/cancelled`. |
+| Base de datos | SQLite, SQLAlchemy y Flask-Migrate; precios `Numeric(10,2)`. |
 
-Crear un entorno virtual:
+## Endpoints
 
-python -m venv venv
+| Método | Ruta | Acceso |
+| --- | --- | --- |
+| POST | `/api/auth/register` | Público |
+| POST | `/api/auth/login` | Público |
+| POST | `/api/auth/logout` | Público; elimina la sesión si existe |
+| GET | `/api/users/` | Admin |
+| GET | `/api/services/` | Público |
+| POST | `/api/services/` | Admin |
+| PATCH | `/api/services/<id>` | Admin |
+| DELETE | `/api/services/<id>` | Admin; sin citas asociadas |
+| GET | `/api/appointments/?status=&date=` | Cliente: propias; admin: todas |
+| POST | `/api/appointments/` | Cliente autenticado |
+| POST | `/api/appointments/availability` | Admin |
+| PATCH | `/api/appointments/<id>/status` | Admin |
 
-Activar el entorno virtual en Windows:
-
-venv\Scripts\activate
-
-Instalar las dependencias:
-
-pip install -r requirements.txt
-
-Ejecutar el proyecto:
-
-python app.py
-
-## Database migrations
-
-The project uses Flask-Migrate. Run these commands after installing dependencies:
+## Pruebas
 
 ```bash
-flask --app app db upgrade
+pytest -q
 ```
 
-When the data model changes, create and apply a new migration:
+Las pruebas cubren registro seguro, sesiones, permisos, disponibilidad de horarios, cancelación, administración, configuración y precisión monetaria.
+
+## Migraciones
+
+Cuando cambies los modelos, genera y aplica una migración nueva:
 
 ```bash
 flask --app app db migrate -m "describe the change"
 flask --app app db upgrade
 ```
 
-## Tests
+No se usa `db.create_all()` al iniciar la aplicación: las migraciones son la fuente de verdad para el esquema.
 
-```bash
-pytest
-```
+## Próximo alcance
 
-## Dirección
-
-http://127.0.0.1:5000
-
-## Endpoints
-
-### Autenticación
-
-POST /api/auth/register
-
-POST /api/auth/login
-
-POST /api/auth/logout
-
-### Usuarios
-
-GET /api/users/
-
-### Servicios
-
-GET /api/services/
-
-POST /api/services/
-
-PATCH /api/services/<id>
-
-DELETE /api/services/<id>
-
-### Citas
-
-GET /api/appointments/
-
-POST /api/appointments/
-
-POST /api/appointments/availability
-
-PATCH /api/appointments/<id>/status
-
-## Objetivo
-
-El objetivo es desarrollar el backend de BeautySquad permitiendo administrar usuarios, servicios y citas mediante una API conectada a una base de datos.
+La interfaz web, la edición o cancelación de citas por clientes, notificaciones, marketing y redes sociales todavía no están implementados. Están documentados como trabajo futuro en `prd.md` y `spec.md`.
