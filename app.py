@@ -11,6 +11,7 @@ from routes.auth import auth_bp
 from routes.users import users_bp
 from routes.services import services_bp
 from routes.appointments import appointments_bp
+from routes.web import web_bp
 
 
 def create_app(test_config=None):
@@ -33,6 +34,7 @@ def create_app(test_config=None):
         appointments_bp,
         url_prefix="/api/appointments"
     )
+    app.register_blueprint(web_bp)
 
     @app.cli.command("create-admin")
     @click.option("--name", prompt=True)
@@ -48,12 +50,6 @@ def create_app(test_config=None):
         db.session.add(admin)
         db.session.commit()
         click.echo("Administrador creado correctamente")
-
-    @app.get("/")
-    def inicio():
-        return {
-            "mensaje": "BeautySquad API funcionando correctamente"
-        }
 
     return app
 

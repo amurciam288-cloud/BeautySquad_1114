@@ -87,6 +87,24 @@ def create_availability():
     }, 201
 
 
+@appointments_bp.get("/availability")
+def list_availability():
+    availability = Availability.query.filter_by(
+        is_available=True
+    ).order_by(Availability.date, Availability.time).all()
+
+    return {
+        "horarios": [
+            {
+                "id": slot.id,
+                "date": slot.date,
+                "time": slot.time,
+            }
+            for slot in availability
+        ]
+    }
+
+
 @appointments_bp.get("/")
 @login_required
 def list_appointments():

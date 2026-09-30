@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block page %}home{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">Belleza, tecnología y estilo</p>
+  <h1>Reserva tu próximo momento de cuidado.</h1>
+  <p>Consulta nuestros servicios y agenda un horario disponible en pocos pasos.</p>
+  <a class="button" href="/bookings">Reservar una cita</a>
+</section>
+<section>
+  <h2>Servicios</h2>
+  <div class="card-grid">
+    {% for service in services %}
+    <article class="card">
+      <h3>{{ service.name }}</h3>
+      <p>{{ service.description or "Servicio de belleza personalizado." }}</p>
+      <strong>${{ "%.2f"|format(service.price) }}</strong>
+    </article>
+    {% else %}
+    <p>Aún no hay servicios publicados.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

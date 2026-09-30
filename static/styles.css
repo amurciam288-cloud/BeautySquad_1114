@@ -1,0 +1,33 @@
+:root {
+  --ink: #30232e;
+  --paper: #fff9fb;
+  --rose: #a84773;
+  --rose-dark: #74234c;
+  --line: #ead8e1;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: var(--paper); font-family: Arial, sans-serif; line-height: 1.5; }
+.site-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 7%; background: white; border-bottom: 1px solid var(--line); }
+.brand { color: var(--rose-dark); font-size: 1.35rem; font-weight: 700; text-decoration: none; }
+nav { display: flex; gap: 1rem; align-items: center; }
+a, .link-button { color: var(--rose-dark); text-decoration: none; font: inherit; }
+.link-button { border: 0; background: transparent; cursor: pointer; }
+.container { width: min(1000px, 90%); margin: 2rem auto 4rem; }
+.hero { padding: 3rem; border-radius: 1rem; background: linear-gradient(120deg, #f5dbe8, #f9ecf3); }
+.eyebrow { color: var(--rose-dark); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+h1 { max-width: 650px; font-size: clamp(2rem, 6vw, 4rem); line-height: 1.1; }
+.button { display: inline-block; padding: .75rem 1rem; color: white; background: var(--rose); border: 0; border-radius: .5rem; cursor: pointer; font: inherit; }
+.button:hover { background: var(--rose-dark); }
+.card-grid, .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+.card, .form-card { padding: 1.25rem; background: white; border: 1px solid var(--line); border-radius: .75rem; }
+.form-card { max-width: 620px; margin: 1rem auto; }
+.admin-grid .form-card { max-width: none; margin: 0; }
+form { display: grid; gap: 1rem; }
+label { display: grid; gap: .35rem; font-weight: 700; }
+input, select, textarea { width: 100%; padding: .65rem; border: 1px solid #c9b3be; border-radius: .4rem; font: inherit; }
+.notice { min-height: 1.5rem; color: #21633b; font-weight: 700; }
+.notice.error { color: #9d153c; }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: .75rem; text-align: left; border-bottom: 1px solid var(--line); }
+@media (max-width: 640px) { .site-header { align-items: flex-start; flex-direction: column; } nav { flex-wrap: wrap; } .hero { padding: 1.5rem; } }

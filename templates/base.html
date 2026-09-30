@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BeautySquad</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body data-page="{% block page %}{% endblock %}">
+    <header class="site-header">
+      <a class="brand" href="/">BeautySquad</a>
+      <nav>
+        <a href="/">Servicios</a>
+        <a href="/bookings">Reservar</a>
+        <a href="/admin" data-admin-link hidden>Administración</a>
+        <a href="/login" data-auth-link>Ingresar</a>
+        <button class="link-button" type="button" data-logout hidden>Salir</button>
+      </nav>
+    </header>
+    <main class="container">
+      <p class="notice" data-notice aria-live="polite"></p>
+      {% block content %}{% endblock %}
+    </main>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

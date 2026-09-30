@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block page %}admin{% endblock %}
+{% block content %}
+<section data-admin-panel hidden>
+  <h1>Administración</h1>
+  <div class="admin-grid">
+    <form class="form-card" data-service-form>
+      <h2>Nuevo servicio</h2>
+      <label>Nombre <input name="name" required></label>
+      <label>Descripción <textarea name="description"></textarea></label>
+      <label>Precio <input name="price" type="number" min="0" step="0.01" required></label>
+      <button class="button">Guardar servicio</button>
+    </form>
+    <form class="form-card" data-slot-form>
+      <h2>Nuevo horario</h2>
+      <label>Fecha <input name="date" type="date" required></label>
+      <label>Hora <input name="time" type="time" required></label>
+      <button class="button">Publicar horario</button>
+    </form>
+  </div>
+  <section>
+    <h2>Citas</h2>
+    <div data-admin-appointments></div>
+  </section>
+</section>
+<section class="form-card" data-admin-denied>
+  <h1>Acceso administrativo</h1>
+  <p>Inicia sesión con una cuenta administradora para gestionar servicios y citas.</p>
+  <a class="button" href="/login">Ingresar</a>
+</section>
+{% endblock %}

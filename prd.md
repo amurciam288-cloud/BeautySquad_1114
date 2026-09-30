@@ -9,8 +9,8 @@ BeautySquad es una plataforma educativa para un estudio de belleza. Su meta es q
 | Usuario | Necesidad | Alcance actual |
 | --- | --- | --- |
 | Visitante | Consultar servicios y precios. | Disponible. |
-| Cliente | Crear cuenta, iniciar sesión, reservar y consultar sus citas. | Disponible en API. |
-| Administrador | Gestionar servicios, horarios y estados de citas. | Disponible en API. |
+| Cliente | Crear cuenta, iniciar sesión, reservar y consultar sus citas. | Disponible mediante interfaz web. |
+| Administrador | Gestionar servicios, horarios y estados de citas. | Panel web básico disponible. |
 
 ## Objetivos del producto
 
@@ -28,6 +28,7 @@ BeautySquad es una plataforma educativa para un estudio de belleza. Su meta es q
 - Consulta de servicios.
 - Reserva de un horario publicado.
 - Consulta de sus propias citas.
+- Interfaz web para servicios, registro, login y reserva.
 
 ### Administración
 
@@ -37,6 +38,7 @@ BeautySquad es una plataforma educativa para un estudio de belleza. Su meta es q
 - Publicar horarios disponibles.
 - Consultar citas por fecha y estado.
 - Confirmar, completar o cancelar citas según las transiciones permitidas.
+- Panel web básico para publicar servicios, horarios y actualizar citas.
 
 ## Reglas de negocio
 
@@ -52,17 +54,15 @@ BeautySquad es una plataforma educativa para un estudio de belleza. Su meta es q
 
 ## Fuera de alcance actual
 
-- Interfaz HTML, CSS y JavaScript.
 - Perfil de cliente y edición/cancelación de citas por el cliente.
 - Notificaciones, recordatorios, promociones, reseñas y redes sociales.
 - Pagos y manejo de inventario.
 
 ## Próximas entregas
 
-1. Interfaz web para servicios, registro, login y reserva.
-2. Pantalla administrativa para agenda y servicios.
-3. Reglas de negocio adicionales: duración de servicios, múltiples profesionales y cancelación por cliente.
-4. Notificaciones y componentes de marketing cuando el flujo principal esté validado.
+1. Mejorar el panel administrativo con edición visual y filtros.
+2. Reglas de negocio adicionales: duración de servicios, múltiples profesionales y cancelación por cliente.
+3. Notificaciones y componentes de marketing cuando el flujo principal esté validado.
 
 ## Criterios de éxito
 

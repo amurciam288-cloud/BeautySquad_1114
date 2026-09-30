@@ -2,7 +2,7 @@
 
 ## Arquitectura actual
 
-BeautySquad es una API Flask organizada por responsabilidades. Aún no incluye interfaz web; las rutas JSON sirven como base para una futura capa HTML/CSS/JavaScript.
+BeautySquad combina una API Flask con una interfaz web inicial. Las rutas JSON sostienen las páginas de servicios, autenticación, reservas y administración básica.
 
 ```text
 BeautySquad_1114/
@@ -15,6 +15,8 @@ BeautySquad_1114/
 │   ├── users.py            # Consulta administrativa de usuarios
 │   ├── services.py         # Catálogo y administración de servicios
 │   └── appointments.py     # Horarios, reservas, filtros y estados
+├── templates/              # Páginas HTML de cliente y administración
+├── static/                 # Estilos y comportamiento del navegador
 ├── migrations/             # Alembic / Flask-Migrate
 ├── tests/                  # Pruebas pytest
 ├── .env.example            # Plantilla de configuración
@@ -83,7 +85,7 @@ Ejecutar `pytest -q` antes de crear un commit. La suite actual cubre permisos, r
 
 ## Limitaciones conocidas
 
-- No existe interfaz visual ni panel web todavía.
+- La interfaz es inicial: no incluye perfil, edición visual de servicios ni calendario avanzado.
 - SQLite es apropiada para aprendizaje y desarrollo local; una publicación multiusuario requerirá una base de datos de servidor.
 - No hay duración de servicios, profesionales ni zonas horarias.
 - Los clientes todavía no pueden cancelar o modificar sus propias citas.

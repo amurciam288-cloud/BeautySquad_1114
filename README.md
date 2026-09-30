@@ -45,6 +45,7 @@ La API queda disponible en `http://127.0.0.1:5000`.
 | Horarios | Solo admin publica horarios disponibles. |
 | Citas | Un cliente reserva únicamente horarios publicados y disponibles. |
 | Estados | `pending → confirmed/cancelled`; `confirmed → completed/cancelled`. |
+| Interfaz | Páginas para servicios, autenticación, reserva y administración básica. |
 | Base de datos | SQLite, SQLAlchemy y Flask-Migrate; precios `Numeric(10,2)`. |
 
 ## Endpoints
@@ -85,4 +86,4 @@ No se usa `db.create_all()` al iniciar la aplicación: las migraciones son la fu
 
 ## Próximo alcance
 
-La interfaz web, la edición o cancelación de citas por clientes, notificaciones, marketing y redes sociales todavía no están implementados. Están documentados como trabajo futuro en `prd.md` y `spec.md`.
+La edición o cancelación de citas por clientes, notificaciones, marketing y redes sociales todavía no están implementados. Están documentados como trabajo futuro en `prd.md` y `spec.md`.

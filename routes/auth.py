@@ -1,7 +1,8 @@
-from flask import Blueprint, request, session
+from flask import Blueprint, g, request, session
 
 from models import db
 from models import User
+from routes.security import login_required
 
 
 auth_bp = Blueprint(
@@ -140,4 +141,17 @@ def logout():
     session.clear()
     return {
         "mensaje": "Sesión cerrada correctamente"
+    }
+
+
+@auth_bp.get("/me")
+@login_required
+def current_user():
+    return {
+        "usuario": {
+            "id": g.current_user.id,
+            "name": g.current_user.name,
+            "email": g.current_user.email,
+            "role": g.current_user.role,
+        }
     }
