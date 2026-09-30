@@ -17,7 +17,7 @@ def serialize_service(service):
         "id": service.id,
         "name": service.name,
         "description": service.description,
-        "price": service.price
+        "price": format(service.price, ".2f")
     }
 
 

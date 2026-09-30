@@ -44,6 +44,14 @@ flask --app app create-admin
 
 ## Instalación
 
+Before running the project, configure the environment variables. Copy
+`.env.example` and export values in your terminal; do not commit a real secret.
+
+```bash
+export SECRET_KEY="replace-with-a-long-random-secret"
+export DATABASE_URL="sqlite:///beautysquad.db"
+```
+
 Crear un entorno virtual:
 
 python -m venv venv
@@ -59,6 +67,21 @@ pip install -r requirements.txt
 Ejecutar el proyecto:
 
 python app.py
+
+## Database migrations
+
+The project uses Flask-Migrate. Run these commands after installing dependencies:
+
+```bash
+flask --app app db upgrade
+```
+
+When the data model changes, create and apply a new migration:
+
+```bash
+flask --app app db migrate -m "describe the change"
+flask --app app db upgrade
+```
 
 ## Tests
 

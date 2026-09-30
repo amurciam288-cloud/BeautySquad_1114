@@ -1,9 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 
 
 db = SQLAlchemy()
+migrate = Migrate()
 
 
 class User(db.Model):
@@ -72,7 +74,7 @@ class Service(db.Model):
     )
 
     price = db.Column(
-        db.Float,
+        db.Numeric(10, 2),
         nullable=False
     )
 

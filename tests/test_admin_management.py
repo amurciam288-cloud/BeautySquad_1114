@@ -35,7 +35,7 @@ def test_admin_can_update_and_delete_a_service(client, app):
 
     assert response.status_code == 200
     assert response.get_json()["servicio"]["name"] == "Premium brows"
-    assert response.get_json()["servicio"]["price"] == 35.0
+    assert response.get_json()["servicio"]["price"] == "35.00"
     assert client.delete(f"/api/services/{service['id']}").status_code == 204
     assert client.get("/api/services/").get_json()["servicios"] == []
 
@@ -74,5 +74,5 @@ def test_admin_can_filter_appointments_and_see_context(client, app):
         "time": "09:00",
         "status": "confirmed",
         "user": {"id": 2, "name": "Client", "email": "client@example.com"},
-        "service": {"id": service["id"], "name": "Brows", "price": 20.0},
+        "service": {"id": service["id"], "name": "Brows", "price": "20.00"},
     }]
