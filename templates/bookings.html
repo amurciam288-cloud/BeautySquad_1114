@@ -7,7 +7,8 @@
   <form data-booking-form>
     <label>Servicio <select name="service_id" data-services data-empty-message="No hay servicios publicados todavía." required><option value="">Cargando servicios...</option></select></label>
     <label>Horario <select name="slot" data-slots data-empty-message="No hay horarios disponibles." required><option value="">Cargando horarios...</option></select></label>
-    <button class="button">Confirmar reserva</button>
+    <p class="booking-status" data-booking-status aria-live="polite">Cargando servicios y horarios...</p>
+    <button class="button" type="submit" data-booking-submit disabled>Confirmar reserva</button>
     <button class="button" type="button" data-booking-retry hidden>Reintentar</button>
   </form>
   <section class="appointments" data-my-appointments hidden>

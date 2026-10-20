@@ -47,6 +47,24 @@ def test_bookings_page_exposes_local_empty_state_messages_and_retry_action(clien
     assert b"No hay horarios disponibles." in response.data
 
 
+def test_bookings_page_exposes_booking_state_region_and_initial_loading_controls(client):
+    response = client.get("/bookings")
+
+    assert response.status_code == 200
+    assert b'data-booking-status' in response.data
+    assert b"Cargando servicios y horarios..." in response.data
+    assert b'data-booking-submit disabled' in response.data
+    assert b"Confirmar reserva" in response.data
+
+
+def test_booking_state_messages_are_present_in_frontend_script(client):
+    response = client.get("/static/app.js")
+
+    assert response.status_code == 200
+    assert b"Reservando cita..." in response.data
+    assert b"Tu cita fue reservada correctamente." in response.data
+
+
 def test_logged_in_user_can_read_own_session_data(client):
     client.post(
         "/api/auth/register",

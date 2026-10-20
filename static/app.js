@@ -2,10 +2,20 @@ const notice = document.querySelector("[data-notice]");
 const BOOKING_LOAD_ERROR = "No se pudieron cargar los datos. Verifica que el servidor esté funcionando.";
 const EMPTY_SERVICES = "No hay servicios publicados todavía.";
 const EMPTY_SLOTS = "No hay horarios disponibles.";
+const BOOKING_LOADING = "Cargando servicios y horarios...";
+const BOOKING_SUBMITTING = "Reservando cita...";
+const BOOKING_SUCCESS = "Tu cita fue reservada correctamente.";
 
 function showNotice(message, isError = false) {
   notice.textContent = message;
   notice.classList.toggle("error", isError);
+}
+
+function showBookingStatus(message, isError = false) {
+  const status = document.querySelector("[data-booking-status]");
+  if (!status) return;
+  status.textContent = message;
+  status.classList.toggle("error", isError);
 }
 
 async function api(url, options = {}) {
@@ -43,8 +53,14 @@ async function populateBookings(user) {
   const serviceSelect = document.querySelector("[data-services]");
   const slotSelect = document.querySelector("[data-slots]");
   const retryButton = document.querySelector("[data-booking-retry]");
+  const bookingSubmit = document.querySelector("[data-booking-submit]");
 
   retryButton.hidden = true;
+  serviceSelect.disabled = true;
+  slotSelect.disabled = true;
+  bookingSubmit.disabled = true;
+  bookingSubmit.textContent = "Confirmar reserva";
+  showBookingStatus(BOOKING_LOADING);
 
   try {
     const [services, slots] = await Promise.all([
@@ -66,12 +82,17 @@ async function populateBookings(user) {
       : `<option value="">${slotSelect.dataset.emptyMessage || EMPTY_SLOTS}</option>`;
     serviceSelect.disabled = !availableServices.length;
     slotSelect.disabled = !availableSlots.length;
+    bookingSubmit.disabled = !availableServices.length || !availableSlots.length;
+    showBookingStatus(availableServices.length && availableSlots.length
+      ? "Selecciona un servicio y un horario para continuar."
+      : "No hay opciones disponibles para reservar.");
   } catch {
     serviceSelect.innerHTML = `<option value="">${BOOKING_LOAD_ERROR}</option>`;
     slotSelect.innerHTML = `<option value="">${BOOKING_LOAD_ERROR}</option>`;
     serviceSelect.disabled = true;
     slotSelect.disabled = true;
     retryButton.hidden = false;
+    showBookingStatus(BOOKING_LOAD_ERROR, true);
     showNotice(BOOKING_LOAD_ERROR, true);
     return;
   }
@@ -131,15 +152,24 @@ function attachForms(user) {
       }
       const values = Object.fromEntries(new FormData(bookingForm));
       const [date, time] = values.slot.split("|");
+      const bookingSubmit = bookingForm.querySelector("[data-booking-submit]");
+      const controls = bookingForm.querySelectorAll("select, button");
+      controls.forEach((control) => { control.disabled = true; });
+      bookingSubmit.textContent = BOOKING_SUBMITTING;
+      showBookingStatus(BOOKING_SUBMITTING);
       try {
         await api("/api/appointments/", {
           method: "POST",
           body: JSON.stringify({ date, time, service_id: Number(values.service_id) }),
         });
-        showNotice("Tu cita fue reservada correctamente.");
+        showNotice(BOOKING_SUCCESS);
         await populateBookings(user);
+        showBookingStatus(BOOKING_SUCCESS);
       } catch (error) {
+        showBookingStatus(error.message, true);
         showNotice(error.message, true);
+        controls.forEach((control) => { control.disabled = false; });
+        bookingSubmit.textContent = "Confirmar reserva";
       }
     });
   }
