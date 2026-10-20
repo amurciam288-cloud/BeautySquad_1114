@@ -132,6 +132,19 @@ def test_booking_state_messages_are_present_in_frontend_script(client):
     assert b"Tu cita fue reservada correctamente." in response.data
 
 
+def test_bookings_page_exposes_simulated_payment_form_without_card_fields(client):
+    page = client.get("/bookings")
+    script = client.get("/static/app.js")
+
+    assert b"Pagar ahora" in script.data
+    assert b"Tarjeta simulada" in page.data
+    assert b"PSE simulado" in page.data
+    assert b"Efectivo simulado" in page.data
+    assert b"no hay cobros reales" in page.data
+    assert b'name="card_number"' not in page.data
+    assert b'name="cvv"' not in page.data
+
+
 def test_logged_in_user_can_read_own_session_data(client):
     client.post(
         "/api/auth/register",

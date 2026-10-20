@@ -1,5 +1,6 @@
 from datetime import date as date_type
 from datetime import datetime
+import secrets
 
 from flask import Blueprint, g
 from flask import request
@@ -8,6 +9,7 @@ from models import db
 from models import Service
 from models import Appointment
 from models import Availability
+from models import Payment
 from routes.security import admin_required, login_required
 
 
@@ -55,6 +57,13 @@ def serialize_appointment(appointment, include_context=False, include_service=Fa
             "price": appointment.service.price,
         }
 
+    if appointment.payment:
+        result["payment"] = {
+            "status": appointment.payment.status,
+            "method": appointment.payment.method,
+            "reference": appointment.payment.reference,
+        }
+
     return result
 
 
@@ -86,6 +95,48 @@ def create_availability():
             "time": availability.time,
             "is_available": availability.is_available
         }
+    }, 201
+
+
+@appointments_bp.post("/<int:appointment_id>/payment")
+@login_required
+def record_simulated_payment(appointment_id):
+    appointment = db.session.get(Appointment, appointment_id)
+
+    if not appointment:
+        return {"error": "La cita no existe"}, 404
+
+    if g.current_user.role != "admin" and appointment.user_id != g.current_user.id:
+        return {"error": "No puedes registrar el pago de otra cita"}, 403
+
+    if appointment.payment:
+        return {"error": "Esta cita ya tiene un pago registrado"}, 409
+
+    if appointment.status not in {"pending", "confirmed"}:
+        return {"error": "Solo puedes pagar una cita pendiente o confirmada"}, 400
+
+    method = (request.get_json() or {}).get("method", "").strip().lower()
+    valid_methods = {"tarjeta_simulada", "pse_simulado", "efectivo_simulado"}
+    if method not in valid_methods:
+        return {"error": "Selecciona un método de pago simulado válido"}, 400
+
+    payment = Payment(
+        appointment=appointment,
+        status="simulated_success",
+        method=method,
+        reference=f"SIM-{secrets.token_hex(10).upper()}",
+    )
+    db.session.add(payment)
+    db.session.commit()
+
+    return {
+        "mensaje": "Pago simulado registrado correctamente",
+        "pago": {
+            "status": payment.status,
+            "method": payment.method,
+            "reference": payment.reference,
+        },
+        "cita": serialize_appointment(appointment),
     }, 201
 
 

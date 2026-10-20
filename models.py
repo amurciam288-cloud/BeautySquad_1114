@@ -2,6 +2,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
+from datetime import datetime
+from datetime import timezone
 
 
 db = SQLAlchemy()
@@ -153,4 +155,54 @@ class Appointment(db.Model):
     service = db.relationship(
         "Service",
         back_populates="appointments"
+    )
+
+    payment = db.relationship(
+        "Payment",
+        back_populates="appointment",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+
+
+class Payment(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    appointment_id = db.Column(
+        db.Integer,
+        db.ForeignKey("appointment.id"),
+        nullable=False,
+        unique=True
+    )
+
+    status = db.Column(
+        db.String(30),
+        nullable=False,
+        default="simulated_success"
+    )
+
+    method = db.Column(
+        db.String(30),
+        nullable=False
+    )
+
+    reference = db.Column(
+        db.String(80),
+        nullable=False,
+        unique=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc)
+    )
+
+    appointment = db.relationship(
+        "Appointment",
+        back_populates="payment"
     )

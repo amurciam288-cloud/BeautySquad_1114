@@ -15,5 +15,24 @@
     <h2>Mis citas</h2>
     <ul data-appointments-list></ul>
   </section>
+  <section class="payment-card" data-payment-panel hidden aria-labelledby="payment-title">
+    <h2 id="payment-title">Pago simulado</h2>
+    <p data-payment-appointment></p>
+    <p class="muted">Este es un ejercicio académico: no hay cobros reales, pasarela externa ni almacenamiento de tarjeta o CVV.</p>
+    <form data-payment-form>
+      <label>Método de pago
+        <select name="method" required>
+          <option value="">Selecciona un método</option>
+          <option value="tarjeta_simulada">Tarjeta simulada</option>
+          <option value="pse_simulado">PSE simulado</option>
+          <option value="efectivo_simulado">Efectivo simulado</option>
+        </select>
+      </label>
+      <div class="payment-actions">
+        <button class="button" type="submit" data-payment-submit>Registrar pago simulado</button>
+        <button class="button button-secondary" type="button" data-payment-cancel>Cancelar</button>
+      </div>
+    </form>
+  </section>
 </section>
 {% endblock %}

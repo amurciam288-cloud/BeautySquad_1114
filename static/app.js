@@ -5,6 +5,11 @@ const EMPTY_SLOTS = "No hay horarios disponibles.";
 const BOOKING_LOADING = "Cargando servicios y horarios...";
 const BOOKING_SUBMITTING = "Reservando cita...";
 const BOOKING_SUCCESS = "Tu cita fue reservada correctamente.";
+const PAYMENT_METHOD_LABELS = {
+  tarjeta_simulada: "Tarjeta simulada",
+  pse_simulado: "PSE simulado",
+  efectivo_simulado: "Efectivo simulado",
+};
 
 function showNotice(message, isError = false) {
   notice.textContent = message;
@@ -104,7 +109,7 @@ async function populateBookings(user) {
   const list = document.querySelector("[data-appointments-list]");
   section.hidden = false;
   list.innerHTML = appointments.citas.length
-    ? appointments.citas.map((appointment) => `<li>${appointment.date} · ${appointment.time} — ${appointment.service.name} ($${appointment.service.price}) — ${appointment.status}${["pending", "confirmed"].includes(appointment.status) ? ` <button type="button" data-client-cancel data-appointment="${appointment.id}">Cancelar cita</button>` : ""}</li>`).join("")
+    ? appointments.citas.map((appointment) => `<li>${appointment.date} · ${appointment.time} — ${appointment.service.name} ($${appointment.service.price}) — ${appointment.status}${appointment.payment ? ` <span class="status status-paid">Pago: ${PAYMENT_METHOD_LABELS[appointment.payment.method] || "Simulado"}</span>` : appointment.status === "pending" ? ` <button type="button" data-client-pay data-appointment="${appointment.id}">Pagar ahora</button>` : ""}${["pending", "confirmed"].includes(appointment.status) ? ` <button type="button" data-client-cancel data-appointment="${appointment.id}">Cancelar cita</button>` : ""}</li>`).join("")
     : "<li>Aún no tienes citas.</li>";
 }
 
@@ -152,13 +157,14 @@ async function renderAdminAppointments(filters = {}) {
   const container = document.querySelector("[data-admin-appointments]");
   document.querySelector("[data-appointment-count]").textContent = `${response.citas.length} ${response.citas.length === 1 ? "cita" : "citas"}`;
   container.innerHTML = response.citas.length
-    ? `<div class="table-scroll"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Servicio</th><th>Estado</th><th>Acción</th></tr></thead><tbody>${response.citas.map((appointment) => `
-      <tr>
-        <td><strong>${escapeHtml(appointment.date)}</strong><small>${escapeHtml(appointment.time)}</small></td>
-        <td>${escapeHtml(appointment.user.name)}<small>${escapeHtml(appointment.user.email)}</small></td>
-        <td>${escapeHtml(appointment.service.name)}</td>
-        <td><span class="status status-${escapeHtml(appointment.status)}">${STATUS_LABELS[appointment.status] || escapeHtml(appointment.status)}</span></td>
-        <td class="actions">${appointment.status === "pending" ? `<button class="action-confirm" data-status="confirmed" data-appointment="${appointment.id}">Confirmar</button> <button class="action-cancel" data-status="cancelled" data-appointment="${appointment.id}">Cancelar</button>` : appointment.status === "confirmed" ? `<button class="action-cancel" data-status="cancelled" data-appointment="${appointment.id}">Cancelar</button>` : "—"}</td>
+     ? `<div class="table-scroll"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Servicio</th><th>Estado</th><th>Pago</th><th>Acción</th></tr></thead><tbody>${response.citas.map((appointment) => `
+       <tr>
+       <td><strong>${escapeHtml(appointment.date)}</strong><small>${escapeHtml(appointment.time)}</small></td>
+       <td>${escapeHtml(appointment.user.name)}<small>${escapeHtml(appointment.user.email)}</small></td>
+       <td>${escapeHtml(appointment.service.name)}</td>
+       <td><span class="status status-${escapeHtml(appointment.status)}">${STATUS_LABELS[appointment.status] || escapeHtml(appointment.status)}</span></td>
+       <td>${appointment.payment ? `<span class="status status-paid">${escapeHtml(PAYMENT_METHOD_LABELS[appointment.payment.method] || "Simulado")}</span><small>${escapeHtml(appointment.payment.reference)}</small>` : "Sin pago"}</td>
+       <td class="actions">${appointment.status === "pending" ? `<button class="action-confirm" data-status="confirmed" data-appointment="${appointment.id}">Confirmar</button> <button class="action-cancel" data-status="cancelled" data-appointment="${appointment.id}">Cancelar</button>` : appointment.status === "confirmed" ? `<button class="action-cancel" data-status="cancelled" data-appointment="${appointment.id}">Cancelar</button>` : "—"}</td>
       </tr>`).join("")}</tbody></table></div>`
     : "<p>No hay citas registradas.</p>";
 }
@@ -218,6 +224,32 @@ function attachForms(user) {
     });
   }
 
+  document.querySelector("[data-payment-form]")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const appointmentId = form.dataset.appointment;
+    const submit = form.querySelector("[data-payment-submit]");
+    submit.disabled = true;
+    try {
+      const result = await api(`/api/appointments/${appointmentId}/payment`, {
+        method: "POST",
+        body: JSON.stringify({ method: new FormData(form).get("method") }),
+      });
+      showNotice(`Pago simulado registrado. Referencia: ${result.pago.reference}`);
+      form.reset();
+      document.querySelector("[data-payment-panel]").hidden = true;
+      await populateBookings(user);
+    } catch (error) {
+      showNotice(error.message, true);
+    } finally {
+      submit.disabled = false;
+    }
+  });
+
+  document.querySelector("[data-payment-cancel]")?.addEventListener("click", () => {
+    document.querySelector("[data-payment-panel]").hidden = true;
+  });
+
   document.querySelector("[data-service-form]")?.addEventListener("submit", async (event) => {
     event.preventDefault();
     try {
@@ -239,6 +271,17 @@ function attachForms(user) {
   });
 
   document.addEventListener("click", async (event) => {
+    const payButton = event.target.closest("[data-client-pay]");
+    if (payButton) {
+      const appointment = (await api("/api/appointments/")).citas.find((item) => item.id === Number(payButton.dataset.appointment));
+      if (!appointment) return;
+      const panel = document.querySelector("[data-payment-panel]");
+      panel.hidden = false;
+      panel.querySelector("[data-payment-appointment]").textContent = `${appointment.service.name} · ${appointment.date} · ${appointment.time}`;
+      panel.querySelector("[data-payment-form]").dataset.appointment = appointment.id;
+      panel.querySelector("[data-payment-form] select").focus();
+      return;
+    }
     const button = event.target.closest("[data-appointment][data-status]");
     if (!button) return;
     try {
