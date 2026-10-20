@@ -1,4 +1,10 @@
+from datetime import date, timedelta
+
 from models import User, db
+
+
+def future_date():
+    return (date.today() + timedelta(days=30)).isoformat()
 
 
 def create_admin(app):
@@ -36,7 +42,7 @@ def test_client_can_only_book_a_published_available_slot(client, app):
     login(client, "admin@example.com")
     service_id = create_service(client)
 
-    slot = {"date": "2026-10-05", "time": "10:30"}
+    slot = {"date": future_date(), "time": "10:30"}
     assert client.post("/api/appointments/availability", json=slot).status_code == 201
 
     client.post("/api/auth/logout")
@@ -56,7 +62,7 @@ def test_admin_cancellation_reopens_the_slot(client, app):
     create_admin(app)
     login(client, "admin@example.com")
     service_id = create_service(client)
-    slot = {"date": "2026-10-06", "time": "11:00"}
+    slot = {"date": future_date(), "time": "11:00"}
     client.post("/api/appointments/availability", json=slot)
 
     client.post("/api/auth/logout")
@@ -88,7 +94,7 @@ def test_client_can_cancel_own_pending_appointment_and_reopen_slot(client, app):
     create_admin(app)
     login(client, "admin@example.com")
     service_id = create_service(client)
-    slot = {"date": "2026-11-06", "time": "11:00"}
+    slot = {"date": future_date(), "time": "11:00"}
     client.post("/api/appointments/availability", json=slot)
 
     client.post("/api/auth/logout")
@@ -116,7 +122,7 @@ def test_client_can_cancel_own_confirmed_appointment(client, app):
     create_admin(app)
     login(client, "admin@example.com")
     service_id = create_service(client)
-    slot = {"date": "2026-11-07", "time": "11:00"}
+    slot = {"date": future_date(), "time": "11:00"}
     client.post("/api/appointments/availability", json=slot)
 
     client.post("/api/auth/logout")
@@ -148,7 +154,7 @@ def test_client_cannot_cancel_another_clients_appointment(client, app):
     create_admin(app)
     login(client, "admin@example.com")
     service_id = create_service(client)
-    slot = {"date": "2026-11-08", "time": "11:00"}
+    slot = {"date": future_date(), "time": "11:00"}
     client.post("/api/appointments/availability", json=slot)
 
     client.post("/api/auth/logout")
@@ -175,7 +181,7 @@ def test_client_cannot_cancel_appointment_outside_allowed_statuses(client, app):
     create_admin(app)
     login(client, "admin@example.com")
     service_id = create_service(client)
-    slot = {"date": "2026-11-09", "time": "11:00"}
+    slot = {"date": future_date(), "time": "11:00"}
     client.post("/api/appointments/availability", json=slot)
 
     client.post("/api/auth/logout")

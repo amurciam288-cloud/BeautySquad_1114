@@ -33,7 +33,7 @@ def validate_slot(data):
     return raw_date, raw_time, None
 
 
-def serialize_appointment(appointment, include_context=False):
+def serialize_appointment(appointment, include_context=False, include_service=False):
     result = {
         "id": appointment.id,
         "date": appointment.date,
@@ -47,6 +47,8 @@ def serialize_appointment(appointment, include_context=False):
             "name": appointment.user.name,
             "email": appointment.user.email,
         }
+
+    if include_context or include_service:
         result["service"] = {
             "id": appointment.service.id,
             "name": appointment.service.name,
@@ -139,7 +141,8 @@ def list_appointments():
 
             serialize_appointment(
                 appointment,
-                include_context=g.current_user.role == "admin"
+                include_context=g.current_user.role == "admin",
+                include_service=g.current_user.role != "admin",
             )
 
             for appointment in appointments

@@ -83,7 +83,7 @@ async function populateBookings(user) {
   const list = document.querySelector("[data-appointments-list]");
   section.hidden = false;
   list.innerHTML = appointments.citas.length
-    ? appointments.citas.map((appointment) => `<li>${appointment.date} · ${appointment.time} — ${appointment.status}${["pending", "confirmed"].includes(appointment.status) ? ` <button type="button" data-client-cancel data-appointment="${appointment.id}">Cancelar cita</button>` : ""}</li>`).join("")
+    ? appointments.citas.map((appointment) => `<li>${appointment.date} · ${appointment.time} — ${appointment.service.name} ($${appointment.service.price}) — ${appointment.status}${["pending", "confirmed"].includes(appointment.status) ? ` <button type="button" data-client-cancel data-appointment="${appointment.id}">Cancelar cita</button>` : ""}</li>`).join("")
     : "<li>Aún no tienes citas.</li>";
 }
 

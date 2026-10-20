@@ -1,4 +1,10 @@
+from datetime import date, timedelta
+
 from models import Availability, Service, db
+
+
+def future_date():
+    return (date.today() + timedelta(days=30)).isoformat()
 
 
 def test_public_home_renders_services_page(client, app):
@@ -16,8 +22,8 @@ def test_public_home_renders_services_page(client, app):
 def test_public_api_exposes_only_available_slots(client, app):
     with app.app_context():
         db.session.add_all([
-            Availability(date="2026-10-15", time="10:00", is_available=True),
-            Availability(date="2026-10-15", time="11:00", is_available=False),
+            Availability(date=future_date(), time="10:00", is_available=True),
+            Availability(date=future_date(), time="11:00", is_available=False),
         ])
         db.session.commit()
 
@@ -26,7 +32,7 @@ def test_public_api_exposes_only_available_slots(client, app):
     assert response.status_code == 200
     assert response.get_json()["horarios"] == [{
         "id": 1,
-        "date": "2026-10-15",
+        "date": future_date(),
         "time": "10:00",
     }]
 
