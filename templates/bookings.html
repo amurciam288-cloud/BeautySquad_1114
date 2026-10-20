@@ -5,9 +5,10 @@
   <h1>Reserva una cita</h1>
   <p>Inicia sesión, elige un servicio y selecciona un horario disponible.</p>
   <form data-booking-form>
-    <label>Servicio <select name="service_id" data-services required><option value="">Cargando servicios...</option></select></label>
-    <label>Horario <select name="slot" data-slots required><option value="">Cargando horarios...</option></select></label>
+    <label>Servicio <select name="service_id" data-services data-empty-message="No hay servicios publicados todavía." required><option value="">Cargando servicios...</option></select></label>
+    <label>Horario <select name="slot" data-slots data-empty-message="No hay horarios disponibles." required><option value="">Cargando horarios...</option></select></label>
     <button class="button">Confirmar reserva</button>
+    <button class="button" type="button" data-booking-retry hidden>Reintentar</button>
   </form>
   <section class="appointments" data-my-appointments hidden>
     <h2>Mis citas</h2>

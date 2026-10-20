@@ -31,6 +31,16 @@ def test_public_api_exposes_only_available_slots(client, app):
     }]
 
 
+def test_bookings_page_exposes_local_empty_state_messages_and_retry_action(client):
+    response = client.get("/bookings")
+
+    assert response.status_code == 200
+    assert b'data-booking-retry' in response.data
+    assert b">Reintentar<" in response.data
+    assert "No hay servicios publicados todavía.".encode() in response.data
+    assert b"No hay horarios disponibles." in response.data
+
+
 def test_logged_in_user_can_read_own_session_data(client):
     client.post(
         "/api/auth/register",

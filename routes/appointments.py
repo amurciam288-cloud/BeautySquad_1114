@@ -219,7 +219,7 @@ def create_appointment():
 
 
 @appointments_bp.patch("/<int:appointment_id>/status")
-@admin_required
+@login_required
 def update_appointment_status(appointment_id):
     data = request.get_json() or {}
     new_status = data.get("status", "").strip().lower()
@@ -227,6 +227,14 @@ def update_appointment_status(appointment_id):
 
     if not appointment:
         return {"error": "La cita no existe"}, 404
+
+    if g.current_user.role != "admin":
+        if appointment.user_id != g.current_user.id:
+            return {"error": "No puedes modificar una cita de otro cliente"}, 403
+        if new_status != "cancelled":
+            return {"error": "Solo puedes cancelar tu cita"}, 400
+        if appointment.status not in {"pending", "confirmed"}:
+            return {"error": "Solo puedes cancelar citas pendientes o confirmadas"}, 400
 
     transitions = {
         "pending": {"confirmed", "cancelled"},

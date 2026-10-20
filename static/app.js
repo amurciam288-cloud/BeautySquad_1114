@@ -1,4 +1,7 @@
 const notice = document.querySelector("[data-notice]");
+const BOOKING_LOAD_ERROR = "No se pudieron cargar los datos. Verifica que el servidor esté funcionando.";
+const EMPTY_SERVICES = "No hay servicios publicados todavía.";
+const EMPTY_SLOTS = "No hay horarios disponibles.";
 
 function showNotice(message, isError = false) {
   notice.textContent = message;
@@ -37,17 +40,41 @@ function updateNavigation(user) {
 }
 
 async function populateBookings(user) {
-  const services = await api("/api/services/");
-  const slots = await api("/api/appointments/availability");
   const serviceSelect = document.querySelector("[data-services]");
   const slotSelect = document.querySelector("[data-slots]");
+  const retryButton = document.querySelector("[data-booking-retry]");
 
-  serviceSelect.innerHTML = '<option value="">Selecciona un servicio</option>' + services.servicios
-    .map((service) => `<option value="${service.id}">${service.name} — $${service.price}</option>`)
-    .join("");
-  slotSelect.innerHTML = '<option value="">Selecciona un horario</option>' + slots.horarios
-    .map((slot) => `<option value="${slot.date}|${slot.time}">${slot.date} · ${slot.time}</option>`)
-    .join("");
+  retryButton.hidden = true;
+
+  try {
+    const [services, slots] = await Promise.all([
+      api("/api/services/"),
+      api("/api/appointments/availability"),
+    ]);
+    const availableServices = services.servicios || [];
+    const availableSlots = slots.horarios || [];
+
+    serviceSelect.innerHTML = availableServices.length
+      ? '<option value="">Selecciona un servicio</option>' + availableServices
+        .map((service) => `<option value="${service.id}">${service.name} — $${service.price}</option>`)
+        .join("")
+      : `<option value="">${serviceSelect.dataset.emptyMessage || EMPTY_SERVICES}</option>`;
+    slotSelect.innerHTML = availableSlots.length
+      ? '<option value="">Selecciona un horario</option>' + availableSlots
+        .map((slot) => `<option value="${slot.date}|${slot.time}">${slot.date} · ${slot.time}</option>`)
+        .join("")
+      : `<option value="">${slotSelect.dataset.emptyMessage || EMPTY_SLOTS}</option>`;
+    serviceSelect.disabled = !availableServices.length;
+    slotSelect.disabled = !availableSlots.length;
+  } catch {
+    serviceSelect.innerHTML = `<option value="">${BOOKING_LOAD_ERROR}</option>`;
+    slotSelect.innerHTML = `<option value="">${BOOKING_LOAD_ERROR}</option>`;
+    serviceSelect.disabled = true;
+    slotSelect.disabled = true;
+    retryButton.hidden = false;
+    showNotice(BOOKING_LOAD_ERROR, true);
+    return;
+  }
 
   if (!user) return;
 
@@ -56,7 +83,7 @@ async function populateBookings(user) {
   const list = document.querySelector("[data-appointments-list]");
   section.hidden = false;
   list.innerHTML = appointments.citas.length
-    ? appointments.citas.map((appointment) => `<li>${appointment.date} · ${appointment.time} — ${appointment.status}</li>`).join("")
+    ? appointments.citas.map((appointment) => `<li>${appointment.date} · ${appointment.time} — ${appointment.status}${["pending", "confirmed"].includes(appointment.status) ? ` <button type="button" data-client-cancel data-appointment="${appointment.id}">Cancelar cita</button>` : ""}</li>`).join("")
     : "<li>Aún no tienes citas.</li>";
 }
 
@@ -93,6 +120,8 @@ function attachForms(user) {
   });
 
   const bookingForm = document.querySelector("[data-booking-form]");
+  const retryButton = document.querySelector("[data-booking-retry]");
+  retryButton?.addEventListener("click", () => populateBookings(user));
   if (bookingForm) {
     bookingForm.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -134,7 +163,7 @@ function attachForms(user) {
   });
 
   document.addEventListener("click", async (event) => {
-    const button = event.target.closest("[data-appointment]");
+    const button = event.target.closest("[data-appointment][data-status]");
     if (!button) return;
     try {
       await api(`/api/appointments/${button.dataset.appointment}/status`, {
@@ -143,6 +172,21 @@ function attachForms(user) {
       });
       await renderAdminAppointments();
       showNotice("Estado de cita actualizado.");
+    } catch (error) { showNotice(error.message, true); }
+  });
+
+  document.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-client-cancel]");
+    if (!button) return;
+    if (!window.confirm("¿Quieres cancelar esta cita?")) return;
+
+    try {
+      await api(`/api/appointments/${button.dataset.appointment}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: "cancelled" }),
+      });
+      showNotice("Cita cancelada correctamente.");
+      await populateBookings(user);
     } catch (error) { showNotice(error.message, true); }
   });
 }
