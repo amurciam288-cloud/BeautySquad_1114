@@ -19,6 +19,73 @@ def test_public_home_renders_services_page(client, app):
     assert b"Brows" in response.data
 
 
+def test_shared_layout_renders_group_footer(client):
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert b'class="site-footer"' in response.data
+    assert "Proyecto desarrollado por las integrantes del grupo: Cathalina Murcia, Valentina Alape y Liseth Reyes.".encode() in response.data
+
+
+def test_navigation_marks_the_current_page_for_keyboard_and_screen_reader_users(client):
+    cases = [
+        ("/", b'href="/" aria-current="page"'),
+        ("/bookings", b'href="/bookings" aria-current="page"'),
+        ("/login", b'href="/login" data-auth-link aria-current="page"'),
+        ("/register", b'href="/login" data-auth-link aria-current="page"'),
+        ("/admin", b'href="/admin" data-admin-link aria-current="page"'),
+    ]
+
+    for path, current_link in cases:
+        response = client.get(path)
+
+        assert response.status_code == 200
+        assert 'aria-label="Navegación principal"'.encode() in response.data
+        assert current_link in response.data
+
+
+def test_styles_include_visible_focus_and_non_color_navigation_states(client):
+    response = client.get("/static/styles.css")
+
+    assert response.status_code == 200
+    assert b"a:focus-visible" in response.data
+    assert b"button:focus-visible" in response.data
+    assert b"input:focus-visible" in response.data
+    assert b"select:focus-visible" in response.data
+    assert b'nav a[aria-current="page"]' in response.data
+    assert b"text-decoration: underline" in response.data
+
+
+def test_admin_page_renders_visual_dashboard_sections_and_controls(client):
+    response = client.get("/admin")
+
+    assert response.status_code == 200
+    for marker in [
+        b'data-admin-summary',
+        b'data-summary-pending',
+        b'data-summary-confirmed',
+        b'data-summary-services',
+        b'data-summary-schedules',
+        b'data-appointment-filters',
+        b'name="status"',
+        b'name="date"',
+        b'data-admin-services',
+        b'data-admin-schedules',
+    ]:
+        assert marker in response.data
+
+
+def test_admin_dashboard_script_uses_existing_filters_and_status_actions(client):
+    response = client.get("/static/app.js")
+
+    assert response.status_code == 200
+    assert b"/api/appointments/" in response.data
+    assert b"new URLSearchParams" in response.data
+    assert b'data-status="confirmed"' in response.data
+    assert b'data-status="cancelled"' in response.data
+    assert b"refreshAdminDashboard" in response.data
+
+
 def test_public_api_exposes_only_available_slots(client, app):
     with app.app_context():
         db.session.add_all([

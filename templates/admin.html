@@ -2,25 +2,53 @@
 {% block page %}admin{% endblock %}
 {% block content %}
 <section data-admin-panel hidden>
-  <h1>Administración</h1>
-  <div class="admin-grid">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow">Panel de control</p>
+      <h1>Administración</h1>
+      <p class="admin-intro">Una vista rápida para organizar el día y mantener BeautySquad al día.</p>
+    </div>
+    <span class="admin-live"><span aria-hidden="true">●</span> Sistema activo</span>
+  </div>
+  <section class="summary-grid" aria-label="Resumen del negocio" data-admin-summary>
+    <article class="summary-card summary-pending"><span class="summary-icon" aria-hidden="true">◷</span><div><p>Citas pendientes</p><strong data-summary-pending>—</strong></div></article>
+    <article class="summary-card summary-confirmed"><span class="summary-icon" aria-hidden="true">✓</span><div><p>Citas confirmadas</p><strong data-summary-confirmed>—</strong></div></article>
+    <article class="summary-card summary-services"><span class="summary-icon" aria-hidden="true">✦</span><div><p>Servicios publicados</p><strong data-summary-services>—</strong></div></article>
+    <article class="summary-card summary-schedules"><span class="summary-icon" aria-hidden="true">▦</span><div><p>Horarios disponibles</p><strong data-summary-schedules>—</strong></div></article>
+  </section>
+  <div class="admin-grid admin-forms">
     <form class="form-card" data-service-form>
+      <div class="section-kicker">Catálogo</div>
       <h2>Nuevo servicio</h2>
       <label>Nombre <input name="name" required></label>
       <label>Descripción <textarea name="description"></textarea></label>
       <label>Precio <input name="price" type="number" min="0" step="0.01" required></label>
-      <button class="button">Guardar servicio</button>
+      <button class="button" type="submit">Guardar servicio</button>
     </form>
     <form class="form-card" data-slot-form>
+      <div class="section-kicker">Agenda</div>
       <h2>Nuevo horario</h2>
       <label>Fecha <input name="date" type="date" required></label>
       <label>Hora <input name="time" type="time" required></label>
-      <button class="button">Publicar horario</button>
+      <button class="button" type="submit">Publicar horario</button>
     </form>
   </div>
-  <section>
-    <h2>Citas</h2>
+  <section class="admin-section admin-appointments">
+    <div class="section-heading">
+      <div><div class="section-kicker">Agenda</div><h2>Próximas citas</h2></div>
+      <span class="section-count" data-appointment-count>— citas</span>
+    </div>
+    <form class="filters" data-appointment-filters aria-label="Filtrar citas">
+      <label>Estado <select name="status"><option value="">Todos los estados</option><option value="pending">Pendientes</option><option value="confirmed">Confirmadas</option><option value="cancelled">Canceladas</option><option value="completed">Completadas</option></select></label>
+      <label>Fecha <input name="date" type="date"></label>
+      <button class="button button-secondary" type="submit">Aplicar filtros</button>
+      <button class="link-button" type="button" data-clear-filters>Limpiar</button>
+    </form>
     <div data-admin-appointments></div>
+  </section>
+  <section class="admin-section resource-grid" aria-label="Recursos disponibles">
+    <article class="resource-card"><div class="section-kicker">Catálogo</div><h2>Servicios publicados</h2><div data-admin-services><p class="muted">Cargando servicios...</p></div></article>
+    <article class="resource-card"><div class="section-kicker">Disponibilidad</div><h2>Horarios disponibles</h2><div data-admin-schedules><p class="muted">Cargando horarios...</p></div></article>
   </section>
 </section>
 <section class="form-card" data-admin-denied>

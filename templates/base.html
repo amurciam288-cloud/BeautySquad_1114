@@ -9,11 +9,11 @@
   <body data-page="{% block page %}{% endblock %}">
     <header class="site-header">
       <a class="brand" href="/">BeautySquad</a>
-      <nav>
-        <a href="/">Servicios</a>
-        <a href="/bookings">Reservar</a>
-        <a href="/admin" data-admin-link hidden>Administración</a>
-        <a href="/login" data-auth-link>Ingresar</a>
+      <nav aria-label="Navegación principal">
+        <a href="/"{% if current_page == "home" %} aria-current="page"{% endif %}>Servicios</a>
+        <a href="/bookings"{% if current_page == "bookings" %} aria-current="page"{% endif %}>Reservar</a>
+        <a href="/admin" data-admin-link{% if current_page == "admin" %} aria-current="page"{% endif %} hidden>Administración</a>
+        <a href="/login" data-auth-link{% if current_page == "auth" %} aria-current="page"{% endif %}>Ingresar</a>
         <button class="link-button" type="button" data-logout hidden>Salir</button>
       </nav>
     </header>
@@ -21,6 +21,9 @@
       <p class="notice" data-notice aria-live="polite"></p>
       {% block content %}{% endblock %}
     </main>
+    <footer class="site-footer">
+      <p>Proyecto desarrollado por las integrantes del grupo: Cathalina Murcia, Valentina Alape y Liseth Reyes.</p>
+    </footer>
     <script src="{{ url_for('static', filename='app.js') }}"></script>
   </body>
 </html>
