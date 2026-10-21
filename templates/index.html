@@ -1,24 +1,69 @@
 {% extends "base.html" %}
 {% block page %}home{% endblock %}
 {% block content %}
-<section class="hero">
-  <p class="eyebrow">Belleza, tecnología y estilo</p>
-  <h1>Reserva tu próximo momento de cuidado.</h1>
-  <p>Consulta nuestros servicios y agenda un horario disponible en pocos pasos.</p>
-  <a class="button" href="/bookings">Reservar una cita</a>
+<section class="home-hero" aria-labelledby="home-title">
+  <div class="hero-copy">
+    <p class="eyebrow">BeautySquad · cuidado personal</p>
+    <h1 id="home-title">Tu estilo empieza con un momento para ti.</h1>
+    <p class="hero-lead">Encuentra el servicio que buscas, revisa la disponibilidad y reserva tu cita de belleza en pocos pasos.</p>
+    <div class="hero-actions">
+      <a class="button" href="/bookings">Reservar una cita</a>
+      <a class="text-link" href="#servicios">Ver servicios <span aria-hidden="true">↓</span></a>
+    </div>
+    <ul class="hero-highlights" aria-label="Ventajas de reservar en BeautySquad">
+      <li><span aria-hidden="true">✦</span> Servicios visibles</li>
+      <li><span aria-hidden="true">◷</span> Horarios disponibles</li>
+    </ul>
+  </div>
+  <div class="hero-art" aria-label="Composición visual abstracta sobre belleza y cuidado" role="img">
+    <span class="art-orbit orbit-one"></span>
+    <span class="art-orbit orbit-two"></span>
+    <div class="art-card art-card-main"><span>ritual</span><strong>de belleza</strong></div>
+    <div class="art-card art-card-note"><span>tu tiempo</span><strong>tu estilo</strong></div>
+    <span class="art-sparkle sparkle-one" aria-hidden="true">✦</span>
+    <span class="art-sparkle sparkle-two" aria-hidden="true">✧</span>
+  </div>
 </section>
-<section>
-  <h2>Servicios</h2>
+
+<section class="home-section intro-section" aria-labelledby="about-title">
+  <div class="section-label">Una experiencia más simple</div>
+  <div class="intro-grid">
+    <div>
+      <h2 id="about-title">Belleza que se adapta a tu ritmo.</h2>
+    </div>
+    <p>BeautySquad reúne tus opciones de cuidado en un solo lugar para que puedas elegir con calma y encontrar un horario que funcione para ti.</p>
+  </div>
+  <div class="trust-grid" aria-label="Características de BeautySquad">
+    <article class="trust-point"><span class="trust-number">01</span><h3>Elige con claridad</h3><p>Consulta nombres, descripciones y precios de los servicios publicados.</p></article>
+    <article class="trust-point"><span class="trust-number">02</span><h3>Reserva sin complicarte</h3><p>Selecciona un servicio y un horario disponible desde la página de reserva.</p></article>
+    <article class="trust-point"><span class="trust-number">03</span><h3>Hazlo a tu manera</h3><p>Tu próximo momento de cuidado comienza cuando tú decides.</p></article>
+  </div>
+</section>
+
+<section class="home-section services-section" id="servicios" aria-labelledby="services-title">
+  <div class="section-heading home-section-heading">
+    <div><div class="section-label">Lo que ofrecemos</div><h2 id="services-title">Servicios para sentirte bien.</h2></div>
+    <a class="text-link" href="/bookings">Ir a reservar <span aria-hidden="true">→</span></a>
+  </div>
   <div class="card-grid">
     {% for service in services %}
-    <article class="card">
+    <article class="card service-card">
+      <span class="service-index">0{{ loop.index }}</span>
       <h3>{{ service.name }}</h3>
       <p>{{ service.description or "Servicio de belleza personalizado." }}</p>
-      <strong>${{ "%.2f"|format(service.price) }}</strong>
+      <div class="service-footer"><strong>${{ "%.2f"|format(service.price) }}</strong><span>Disponible para reservar</span></div>
     </article>
     {% else %}
-    <p>Aún no hay servicios publicados.</p>
+    <p class="empty-state">Aún no hay servicios publicados.</p>
     {% endfor %}
   </div>
+</section>
+
+<section class="booking-banner" aria-labelledby="booking-title">
+  <div>
+    <div class="section-label">Tu próxima cita</div>
+    <h2 id="booking-title">Haz espacio para lo que te hace bien.</h2>
+  </div>
+  <div><p>Revisa los horarios disponibles y da el primer paso hacia tu próximo ritual de belleza.</p><a class="button button-light" href="/bookings">Comenzar reserva <span aria-hidden="true">→</span></a></div>
 </section>
 {% endblock %}
