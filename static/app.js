@@ -5,6 +5,12 @@ const EMPTY_SLOTS = "No hay horarios disponibles.";
 const BOOKING_LOADING = "Cargando servicios y horarios...";
 const BOOKING_SUBMITTING = "Reservando cita...";
 const BOOKING_SUCCESS = "Tu cita fue reservada correctamente.";
+const STATUS_LABELS = {
+  pending: "Pendiente",
+  confirmed: "Confirmada",
+  cancelled: "Cancelada",
+  completed: "Completada",
+};
 const PAYMENT_METHOD_LABELS = {
   tarjeta_simulada: "Tarjeta simulada",
   pse_simulado: "PSE simulado",
@@ -109,7 +115,7 @@ async function populateBookings(user) {
   const list = document.querySelector("[data-appointments-list]");
   section.hidden = false;
   list.innerHTML = appointments.citas.length
-    ? appointments.citas.map((appointment) => `<li>${appointment.date} · ${appointment.time} — ${appointment.service.name} ($${appointment.service.price}) — ${appointment.status}${appointment.payment ? ` <span class="status status-paid">Pago: ${PAYMENT_METHOD_LABELS[appointment.payment.method] || "Simulado"}</span>` : appointment.status === "pending" ? ` <button type="button" data-client-pay data-appointment="${appointment.id}">Pagar ahora</button>` : ""}${["pending", "confirmed"].includes(appointment.status) ? ` <button type="button" data-client-cancel data-appointment="${appointment.id}">Cancelar cita</button>` : ""}</li>`).join("")
+    ? appointments.citas.map((appointment) => `<li class="appointment-item"><div><strong>${escapeHtml(appointment.service.name)}</strong><span>$${escapeHtml(appointment.service.price)}</span><span>${escapeHtml(appointment.date)} · ${escapeHtml(appointment.time)}</span><span class="status status-${escapeHtml(appointment.status)}">${STATUS_LABELS[appointment.status] || escapeHtml(appointment.status)}</span>${appointment.payment ? ` <span class="status status-paid">Pago: ${escapeHtml(PAYMENT_METHOD_LABELS[appointment.payment.method] || "Simulado")}</span>` : appointment.status === "pending" ? ` <button type="button" data-client-pay data-appointment="${appointment.id}">Pagar ahora</button>` : ""}</div>${["pending", "confirmed"].includes(appointment.status) ? ` <button class="appointment-cancel" type="button" data-client-cancel data-appointment="${appointment.id}" aria-label="Cancelar cita de ${escapeHtml(appointment.service.name)} del ${escapeHtml(appointment.date)}">Cancelar cita</button>` : ""}</li>`).join("")
     : "<li>Aún no tienes citas.</li>";
 }
 
@@ -118,13 +124,6 @@ function escapeHtml(value) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;",
   }[character]));
 }
-
-const STATUS_LABELS = {
-  pending: "Pendiente",
-  confirmed: "Confirmada",
-  cancelled: "Cancelada",
-  completed: "Completada",
-};
 
 async function renderAdminSummary() {
   const [appointments, services, schedules] = await Promise.all([
@@ -300,8 +299,8 @@ function attachForms(user) {
     if (!window.confirm("¿Quieres cancelar esta cita?")) return;
 
     try {
-      await api(`/api/appointments/${button.dataset.appointment}/status`, {
-        method: "PATCH",
+      await api(`/api/appointments/${button.dataset.appointment}/cancel`, {
+        method: "POST",
         body: JSON.stringify({ status: "cancelled" }),
       });
       showNotice("Cita cancelada correctamente.");

@@ -165,6 +165,18 @@ def test_bookings_page_exposes_simulated_payment_form_without_card_fields(client
     assert b'name="cvv"' not in page.data
 
 
+def test_bookings_page_exposes_client_appointment_status_and_cancel_flow(client):
+    page = client.get("/bookings")
+    script = client.get("/static/app.js")
+
+    assert b"Consulta aqu\xc3\xad tus pr\xc3\xb3ximas citas" in page.data
+    assert b"data-appointments-list" in page.data
+    assert b"Pendiente" in script.data
+    assert b"Cancelar cita" in script.data
+    assert b"/api/appointments/${button.dataset.appointment}/cancel" in script.data
+    assert b"window.confirm" in script.data
+
+
 def test_logged_in_user_can_read_own_session_data(client):
     client.post(
         "/api/auth/register",

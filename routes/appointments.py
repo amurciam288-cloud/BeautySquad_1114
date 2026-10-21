@@ -317,3 +317,33 @@ def update_appointment_status(appointment_id):
             "status": appointment.status
         }
     }
+
+
+@appointments_bp.post("/<int:appointment_id>/cancel")
+@login_required
+def cancel_appointment(appointment_id):
+    appointment = db.session.get(Appointment, appointment_id)
+
+    if not appointment:
+        return {"error": "La cita no existe"}, 404
+
+    if g.current_user.role != "admin" and appointment.user_id != g.current_user.id:
+        return {"error": "No puedes cancelar una cita de otro cliente"}, 403
+
+    if appointment.status not in {"pending", "confirmed"}:
+        return {"error": "Solo puedes cancelar citas pendientes o confirmadas"}, 400
+
+    appointment.status = "cancelled"
+    availability = Availability.query.filter_by(
+        date=appointment.date,
+        time=appointment.time
+    ).first()
+    if availability:
+        availability.is_available = True
+
+    db.session.commit()
+
+    return {
+        "mensaje": "Cita cancelada correctamente",
+        "cita": serialize_appointment(appointment, include_service=True),
+    }

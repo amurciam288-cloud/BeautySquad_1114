@@ -75,10 +75,7 @@ def test_admin_cancellation_reopens_the_slot(client, app):
 
     client.post("/api/auth/logout")
     login(client, "admin@example.com")
-    response = client.patch(
-        f"/api/appointments/{appointment['id']}/status",
-        json={"status": "cancelled"},
-    )
+    response = client.post(f"/api/appointments/{appointment['id']}/cancel")
 
     assert response.status_code == 200
 
@@ -105,10 +102,7 @@ def test_client_can_cancel_own_pending_appointment_and_reopen_slot(client, app):
         json={**slot, "service_id": service_id},
     ).get_json()["cita"]
 
-    response = client.patch(
-        f"/api/appointments/{appointment['id']}/status",
-        json={"status": "cancelled"},
-    )
+    response = client.post(f"/api/appointments/{appointment['id']}/cancel")
 
     assert response.status_code == 200
     assert response.get_json()["cita"]["status"] == "cancelled"
@@ -142,12 +136,31 @@ def test_client_can_cancel_own_confirmed_appointment(client, app):
 
     client.post("/api/auth/logout")
     login(client, "client@example.com")
-    response = client.patch(
-        f"/api/appointments/{appointment['id']}/status",
-        json={"status": "cancelled"},
-    )
+    response = client.post(f"/api/appointments/{appointment['id']}/cancel")
 
     assert response.status_code == 200
+
+
+def test_client_cancel_endpoint_returns_consistent_spanish_response(client, app):
+    create_admin(app)
+    login(client, "admin@example.com")
+    service_id = create_service(client)
+    slot = {"date": future_date(), "time": "12:00"}
+    client.post("/api/appointments/availability", json=slot)
+
+    client.post("/api/auth/logout")
+    register(client, "client@example.com")
+    login(client, "client@example.com")
+    appointment = client.post(
+        "/api/appointments/",
+        json={**slot, "service_id": service_id},
+    ).get_json()["cita"]
+
+    response = client.post(f"/api/appointments/{appointment['id']}/cancel")
+
+    assert response.status_code == 200
+    assert response.get_json()["mensaje"] == "Cita cancelada correctamente"
+    assert response.get_json()["cita"]["status"] == "cancelled"
 
 
 def test_client_cannot_cancel_another_clients_appointment(client, app):
@@ -168,10 +181,7 @@ def test_client_cannot_cancel_another_clients_appointment(client, app):
     client.post("/api/auth/logout")
     register(client, "second@example.com")
     login(client, "second@example.com")
-    response = client.patch(
-        f"/api/appointments/{appointment['id']}/status",
-        json={"status": "cancelled"},
-    )
+    response = client.post(f"/api/appointments/{appointment['id']}/cancel")
 
     assert response.status_code == 403
     assert client.get("/api/appointments/availability").get_json()["horarios"] == []
@@ -205,9 +215,6 @@ def test_client_cannot_cancel_appointment_outside_allowed_statuses(client, app):
 
     client.post("/api/auth/logout")
     login(client, "client@example.com")
-    response = client.patch(
-        f"/api/appointments/{appointment['id']}/status",
-        json={"status": "cancelled"},
-    )
+    response = client.post(f"/api/appointments/{appointment['id']}/cancel")
 
     assert response.status_code == 400
