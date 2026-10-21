@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from models import Availability, Service, db
+from models import Availability, Service, TeamMember, db
 
 
 def future_date():
@@ -25,6 +25,26 @@ def test_shared_layout_renders_group_footer(client):
     assert response.status_code == 200
     assert b'class="site-footer"' in response.data
     assert "Proyecto desarrollado por las integrantes del grupo: Cathalina Murcia, Valentina Alape y Liseth Reyes.".encode() in response.data
+
+
+def test_public_home_renders_confirmed_project_members_without_fictitious_profiles(client, app):
+    with app.app_context():
+        db.session.add_all([
+            TeamMember(name="Cathalina Murcia", specialty="Equipo BeautySquad", image_url="/static/placeholder-team.svg"),
+            TeamMember(name="Valentina Alape", specialty="Equipo BeautySquad", image_url="/static/placeholder-team.svg"),
+            TeamMember(name="Liseth Reyes", specialty="Equipo BeautySquad", image_url="/static/placeholder-team.svg"),
+        ])
+        db.session.commit()
+
+    response = client.get("/")
+
+    assert response.status_code == 200
+    for name in ["Cathalina Murcia", "Valentina Alape", "Liseth Reyes"]:
+        assert response.data.count(name.encode()) >= 2
+    for fictitious_name in ["Laura Gómez", "Mariana Rojas", "Sofía Torres", "Camila Vargas"]:
+        assert fictitious_name.encode() not in response.data
+    assert b"integrantes reales del proyecto" in response.data
+    assert b"datos de demostraci\xc3\xb3n del cat\xc3\xa1logo" in response.data
 
 
 def test_navigation_marks_the_current_page_for_keyboard_and_screen_reader_users(client):

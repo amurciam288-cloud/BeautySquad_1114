@@ -80,9 +80,38 @@ class Service(db.Model):
         nullable=False
     )
 
+    image_url = db.Column(
+        db.String(500)
+    )
+
     appointments = db.relationship(
         "Appointment",
         back_populates="service"
+    )
+
+
+class TeamMember(db.Model):
+    __tablename__ = "team_member"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    name = db.Column(
+        db.String(100),
+        nullable=False,
+        unique=True
+    )
+
+    specialty = db.Column(
+        db.String(120),
+        nullable=False
+    )
+
+    image_url = db.Column(
+        db.String(500),
+        nullable=False
     )
 
 

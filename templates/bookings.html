@@ -4,6 +4,10 @@
 <section class="form-card">
   <h1>Reserva una cita</h1>
   <p>Inicia sesión, elige un servicio y selecciona un horario disponible.</p>
+  <aside class="booking-account-notice" aria-label="Información para crear una cuenta">
+    <p><strong>¿Es tu primera vez?</strong> <a class="text-link" href="/register">Crea tu cuenta para reservar y consultar tus citas.</a></p>
+    <p class="muted">¿Ya tienes cuenta? <a class="text-link" href="/login">Inicia sesión</a> para continuar.</p>
+  </aside>
   <form data-booking-form>
     <label>Servicio <select name="service_id" data-services data-empty-message="No hay servicios publicados todavía." required><option value="">Cargando servicios...</option></select></label>
     <label>Horario <select name="slot" data-slots data-empty-message="No hay horarios disponibles." required><option value="">Cargando horarios...</option></select></label>

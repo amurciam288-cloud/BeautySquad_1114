@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template
 
 from models import Service
+from models import TeamMember
 
 
 web_bp = Blueprint("web", __name__)
@@ -8,7 +9,12 @@ web_bp = Blueprint("web", __name__)
 
 @web_bp.get("/")
 def home():
-    return render_template("index.html", services=Service.query.all(), current_page="home")
+    return render_template(
+        "index.html",
+        services=Service.query.all(),
+        team_members=TeamMember.query.all(),
+        current_page="home",
+    )
 
 
 @web_bp.get("/login")

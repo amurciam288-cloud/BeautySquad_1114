@@ -15,7 +15,8 @@
       <li><span aria-hidden="true">◷</span> Horarios disponibles</li>
     </ul>
   </div>
-  <div class="hero-art" aria-label="Composición visual abstracta sobre belleza y cuidado" role="img">
+  <div class="hero-art" aria-hidden="true">
+    <canvas class="hero-canvas" data-three-scene></canvas>
     <span class="art-orbit orbit-one"></span>
     <span class="art-orbit orbit-two"></span>
     <div class="art-card art-card-main"><span>ritual</span><strong>de belleza</strong></div>
@@ -48,13 +49,31 @@
   <div class="card-grid">
     {% for service in services %}
     <article class="card service-card">
-      <span class="service-index">0{{ loop.index }}</span>
-      <h3>{{ service.name }}</h3>
-      <p>{{ service.description or "Servicio de belleza personalizado." }}</p>
-      <div class="service-footer"><strong>${{ "%.2f"|format(service.price) }}</strong><span>Disponible para reservar</span></div>
+       <div class="service-image-wrap">
+         <img class="service-image" src="{{ service.image_url or url_for('static', filename='placeholder-service.svg') }}" alt="Imagen ilustrativa de {{ service.name }}" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='placeholder-service.svg') }}';">
+       </div>
+       <span class="service-index">0{{ loop.index }}</span>
+       <h3>{{ service.name }}</h3>
+       <p>{{ service.description or "Servicio de belleza personalizado." }}</p>
+       <div class="service-footer"><strong>${{ "{:,.0f}".format(service.price)|replace(",", ".") }} COP</strong><span>Disponible para reservar</span></div>
     </article>
     {% else %}
     <p class="empty-state">Aún no hay servicios publicados.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="home-section team-section" id="equipo" aria-labelledby="team-title">
+  <div class="section-heading home-section-heading">
+    <div><div class="section-label">Integrantes del proyecto</div><h2 id="team-title">Un equipo para acompañarte.</h2></div>
+  </div>
+  <p class="section-note">Conoce a las integrantes reales del proyecto. Las imágenes y especialidades son datos de demostración del catálogo de BeautySquad.</p>
+  <div class="team-grid">
+    {% for member in team_members %}
+    <article class="team-card">
+      <img class="team-image" src="{{ member.image_url }}" alt="Imagen ilustrativa de {{ member.name }}, integrante del proyecto" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='placeholder-team.svg') }}';">
+      <div><h3>{{ member.name }}</h3><p>{{ member.specialty }}</p><span>Integrante del proyecto · datos de demostración</span></div>
+    </article>
     {% endfor %}
   </div>
 </section>
@@ -66,4 +85,7 @@
   </div>
   <div><p>Revisa los horarios disponibles y da el primer paso hacia tu próximo ritual de belleza.</p><a class="button button-light" href="/bookings">Comenzar reserva <span aria-hidden="true">→</span></a></div>
 </section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='hero-scene.js') }}"></script>
 {% endblock %}
