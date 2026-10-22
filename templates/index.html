@@ -15,10 +15,8 @@
       <li><span aria-hidden="true">◷</span> Horarios disponibles</li>
     </ul>
   </div>
-  <div class="hero-art" aria-hidden="true">
-    <canvas class="hero-canvas" data-three-scene></canvas>
-    <span class="art-orbit orbit-one"></span>
-    <span class="art-orbit orbit-two"></span>
+  <div class="hero-art">
+    <img class="hero-image" src="{{ url_for('static', filename='hero_beauty.jpeg') }}" alt="Mujer sonriente caminando por una playa tranquila">
     <div class="art-card art-card-main"><span>ritual</span><strong>de belleza</strong></div>
     <div class="art-card art-card-note"><span>tu tiempo</span><strong>tu estilo</strong></div>
     <span class="art-sparkle sparkle-one" aria-hidden="true">✦</span>
@@ -85,7 +83,4 @@
   </div>
   <div><p>Revisa los horarios disponibles y da el primer paso hacia tu próximo ritual de belleza.</p><a class="button button-light" href="/bookings">Comenzar reserva <span aria-hidden="true">→</span></a></div>
 </section>
-{% endblock %}
-{% block scripts %}
-<script type="module" src="{{ url_for('static', filename='hero-scene.js') }}"></script>
 {% endblock %}
